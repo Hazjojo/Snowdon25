@@ -61,7 +61,7 @@
 
         <section id="introduction" class="card text-center">
             <h2 class="text-3xl font-bold brand-text mb-4">The Daring Ascent</h2>
-            <p class="text-lg leading-relaxed">A new chapter in our journey begins. A small, determined troop prepares to travel north, drawn by an ancient instinct towards the colossal volcanic massif of Snowdonia. This is a pilgrimage not of necessity, but of spirit—a quest to stand upon the roof of Wales.</p>
+            <p class="text-lg leading-relaxed">A new chapter in our journey begins. A small, determined troop prepares to travel north, drawn by an ancient instinct towards the colossal volcanic massif of Snowdonia. This is a pilgrimage not of necessity, but of spirit&mdash;a quest to stand upon the roof of Wales.</p>
         </section>
 
         <section id="timeline" class="card">
@@ -129,7 +129,7 @@
         <section id="summit" class="grid md:grid-cols-2 gap-8 items-center">
             <div class="card md:col-span-1">
                 <h2 class="text-3xl font-bold brand-text mb-4">The Summit: 1,085m</h2>
-                <p class="text-lg leading-relaxed">At last, the summit of Yr Wyddfa. This is a world above our own, a high-altitude ecosystem where only the hardiest life survives. The Snowdon Lily, a rare arctic-alpine plant, clings to existence here, a fragile jewel in a crown of ancient volcanic rock. The views, on a clear day, are simply breathtaking—a panoramic reward for hours of relentless effort.</p>
+                <p class="text-lg leading-relaxed">At last, the summit of Yr Wyddfa. This is a world above our own, a high-altitude ecosystem where only the hardiest life survives. The Snowdon Lily, a rare arctic-alpine plant, clings to existence here, a fragile jewel in a crown of ancient volcanic rock. The views, on a clear day, are simply breathtaking&mdash;a panoramic reward for hours of relentless effort.</p>
                 <div class="mt-4">
                     <button id="generateFactBtn" class="action-button w-full">
                         Generate New Snowdon Fact ✨
@@ -329,110 +329,121 @@
                     }
                 }
             };
+            
+            // --- IMPORTANT: Paste your Gemini API key here. ---
+            const apiKey = "AIzaSyB_lww3ajaVceKaEX2X3bF7lB_bDpWeCoM"; // <--- REPLACE THIS WITH YOUR API KEY
 
-            // Generate Packing List
-            generateListBtn.addEventListener('click', async () => {
+            if (!apiKey) {
+                const errorMessage = '<p class="text-red-500">Error: API key is missing. Please add your key to the code.</p>';
                 generateListBtn.disabled = true;
+                generateFactBtn.disabled = true;
+                packingListOutput.innerHTML = errorMessage;
+                funFactOutput.innerHTML = errorMessage;
                 packingListOutput.classList.remove('hidden');
-                packingListOutput.innerHTML = '<p class="text-center animate-pulse">Generating your packing list...</p>';
-                
-                try {
-                    const prompt = `Based on a hiking expedition on Snowdon (Yr Wyddfa) in Wales, which is 12.5 kilometers long, involves a 723 meter ascent, and takes about 8 hours, please generate a comprehensive packing list. Organize the list into categories such as "Clothing", "Equipment", "Food & Drink", and "Safety & Navigation". For each category, provide a list of specific items.`;
+                funFactOutput.classList.remove('hidden');
+            } else {
+                // Generate Packing List
+                generateListBtn.addEventListener('click', async () => {
+                    generateListBtn.disabled = true;
+                    packingListOutput.classList.remove('hidden');
+                    packingListOutput.innerHTML = '<p class="text-center animate-pulse">Generating your packing list...</p>';
                     
-                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                    const payload = {
-                        contents: chatHistory,
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "ARRAY",
-                                items: {
-                                    type: "OBJECT",
-                                    properties: {
-                                        "category": { "type": "STRING" },
-                                        "items": { "type": "ARRAY", "items": { "type": "STRING" } }
+                    try {
+                        const prompt = `Based on a hiking expedition on Snowdon (Yr Wyddfa) in Wales, which is 12.5 kilometers long, involves a 723 meter ascent, and takes about 8 hours, please generate a comprehensive packing list. Organize the list into categories such as "Clothing", "Equipment", "Food & Drink", and "Safety & Navigation". For each category, provide a list of specific items.`;
+                        
+                        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                        const payload = {
+                            contents: chatHistory,
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            "category": { "type": "STRING" },
+                                            "items": { "type": "ARRAY", "items": { "type": "STRING" } }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    };
-                    
-                    const apiKey = "AIzaSyB_lww3ajaVceKaEX2X3bF7lB_bDpWeCoM";
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                    const response = await withExponentialBackoff(() => fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    }));
-
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const json = result.candidates[0].content.parts[0].text;
-                        const parsedJson = JSON.parse(json);
+                        };
                         
-                        let html = '';
-                        parsedJson.forEach(cat => {
-                            html += `<h4 class="font-bold text-lg text-emerald-700 mt-4 mb-2">${cat.category}</h4>`;
-                            html += '<ul class="list-disc list-inside space-y-1">';
-                            cat.items.forEach(item => {
-                                html += `<li>${item}</li>`;
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                        const response = await withExponentialBackoff(() => fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }));
+
+                        const result = await response.json();
+                        
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const json = result.candidates[0].content.parts[0].text;
+                            const parsedJson = JSON.parse(json);
+                            
+                            let html = '';
+                            parsedJson.forEach(cat => {
+                                html += `<h4 class="font-bold text-lg text-emerald-700 mt-4 mb-2">${cat.category}</h4>`;
+                                html += '<ul class="list-disc list-inside space-y-1">';
+                                cat.items.forEach(item => {
+                                    html += `<li>${item}</li>`;
+                                });
+                                html += '</ul>';
                             });
-                            html += '</ul>';
-                        });
-                        packingListOutput.innerHTML = html;
-                    } else {
-                        packingListOutput.innerHTML = '<p class="text-red-500">Error: Could not generate packing list. Please try again.</p>';
+                            packingListOutput.innerHTML = html;
+                        } else {
+                            packingListOutput.innerHTML = '<p class="text-red-500">Error: Could not generate packing list. Please try again.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error generating packing list:', error);
+                        packingListOutput.innerHTML = '<p class="text-red-500">An error occurred. Please check the console for details.</p>';
+                    } finally {
+                        generateListBtn.disabled = false;
                     }
-                } catch (error) {
-                    console.error('Error generating packing list:', error);
-                    packingListOutput.innerHTML = '<p class="text-red-500">An error occurred. Please check the console for details.</p>';
-                } finally {
-                    generateListBtn.disabled = false;
-                }
-            });
+                });
 
-            // Generate Fun Fact
-            generateFactBtn.addEventListener('click', async () => {
-                generateFactBtn.disabled = true;
-                funFactOutput.classList.remove('hidden');
-                funFactOutput.innerHTML = '<p class="text-center animate-pulse">Fetching a fun fact...</p>';
+                // Generate Fun Fact
+                generateFactBtn.addEventListener('click', async () => {
+                    generateFactBtn.disabled = true;
+                    funFactOutput.classList.remove('hidden');
+                    funFactOutput.innerHTML = '<p class="text-center animate-pulse">Fetching a fun fact...</p>';
 
-                try {
-                    const prompt = `Provide a single, interesting, and concise fun fact about Snowdon (Yr Wyddfa), covering its history, geology, or local legends.`;
-                    
-                    const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                    const payload = { contents: chatHistory };
-                    
-                    const apiKey = "";
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    try {
+                        const prompt = `Provide a single, interesting, and concise fun fact about Snowdon (Yr Wyddfa), covering its history, geology, or local legends.`;
+                        
+                        const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                        const payload = { contents: chatHistory };
+                        
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-                    const response = await withExponentialBackoff(() => fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    }));
-                    
-                    const result = await response.json();
+                        const response = await withExponentialBackoff(() => fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }));
+                        
+                        const result = await response.json();
 
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        funFactOutput.innerHTML = text;
-                    } else {
-                        funFactOutput.innerHTML = '<p class="text-red-500">Error: Could not generate fun fact. Please try again.</p>';
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            funFactOutput.innerHTML = text;
+                        } else {
+                            funFactOutput.innerHTML = '<p class="text-red-500">Error: Could not generate fun fact. Please try again.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error generating fun fact:', error);
+                        funFactOutput.innerHTML = '<p class="text-red-500">An error occurred. Please check the console for details.</p>';
+                    } finally {
+                        generateFactBtn.disabled = false;
                     }
-                } catch (error) {
-                    console.error('Error generating fun fact:', error);
-                    funFactOutput.innerHTML = '<p class="text-red-500">An error occurred. Please check the console for details.</p>';
-                } finally {
-                    generateFactBtn.disabled = false;
-                }
-            });
+                });
+            }
         });
     </script>
 </body>

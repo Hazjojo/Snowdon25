@@ -33,6 +33,23 @@
             padding: 1.5rem;
             margin-bottom: 2rem;
         }
+        
+        /* Keyframe animation for the pulsating glow effect */
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 8px 10px -3px rgba(0, 87, 183, 0.4), 0 4px 6px -2px rgba(0, 87, 183, 0.2);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            }
+        }
+        
         .action-button {
             display: inline-block;
             padding: 0.75rem 1.5rem;
@@ -40,25 +57,23 @@
             color: white;
             font-weight: bold;
             border-radius: 0.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.5s ease-in-out; /* Smoother transition for all properties, including color */
             cursor: pointer;
             text-align: center;
         }
         .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background-color: #008744; /* Fade to green on hover */
+            animation: pulse-glow 1.5s infinite; /* Apply the pulsing animation on hover */
         }
     </style>
 
-    <!-- Open Graph Meta Tags for Link Previews -->
     <meta property="og:title" content="Snowdon: A Living Planet Expedition">
     <meta property="og:description" content="Join us for a daring one-day hiking expedition up Snowdon in Wales on August 24th, 2025!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1608054426970-c6ff5a4399c2?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-    <meta property="og:url" content="https://www.yourdomain.com/index.html">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1608054426970-c6ff5a4399c2?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"> 
+    <meta property="og:url" content="https://www.yourdomain.com/index.html"> 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Living Planet Expeditions">
-    <!-- End Open Graph Meta Tags -->
-</head>
+    </head>
 <body class="text-gray-800">
 
     <header class="highlight-bg text-white text-center py-12 px-4">
@@ -69,6 +84,9 @@
     <main class="container mx-auto p-4 md:p-8">
 
         <section id="introduction" class="card text-center">
+            <img src="https://images.unsplash.com/photo-1608054426970-c6ff5a4399c2?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                 alt="A stunning view of the Snowdon summit with a vibrant sunset and clouds."
+                 class="w-full h-64 object-cover rounded-lg mb-6">
             <h2 class="text-3xl font-bold brand-text mb-4">The Daring Ascent</h2>
             <p class="text-lg leading-relaxed">A new chapter in our journey begins. A small, determined troop prepares to travel north, drawn by an ancient instinct towards the colossal volcanic massif of Snowdonia. This is a pilgrimage not of necessity, but of spirit&mdash;a quest to stand upon the roof of Wales.</p>
         </section>
@@ -125,6 +143,14 @@
         <section id="routes" class="card">
             <h2 class="text-3xl font-bold brand-text text-center mb-4">The Tale of Two Paths</h2>
             <p class="text-lg text-center leading-relaxed mb-6">The circular route presents two distinct challenges, each with its own character. The Miners' Track offers a gentle, cinematic prelude before its fierce final climb, while the Pyg Track is a relentless, rugged test from the start. This comparison reveals the nature of the day's journey.</p>
+            <div class="text-center my-8">
+                <a href="https://www.alltrails.com/en-gb/trail/wales/gwynedd/yr-wyddfa-snowdon-via-miner-s-track-and-pyg-circular" 
+                   target="_blank" 
+                   class="action-button"
+                   role="button">
+                    View Route on AllTrails
+                </a>
+            </div>
             <div class="chart-container">
                 <canvas id="routeComparisonChart"></canvas>
             </div>
@@ -340,7 +366,7 @@
             };
             
             // --- IMPORTANT: Paste your Gemini API key here. ---
-            const apiKey = "AIzaSyB_lww3ajaVceKaEX2X3bF7lB_bDpWeCoM"; // <--- REPLACE THIS WITH YOUR API KEY
+            const apiKey = "AIzaSyB_lww3ajaVceKaEX2X3bF7lB_bDpWeCoM"; 
 
             if (!apiKey) {
                 const errorMessage = '<p class="text-red-500">Error: API key is missing. Please add your key to the code.</p>';
@@ -422,7 +448,7 @@
                     funFactOutput.innerHTML = '<p class="text-center animate-pulse">Fetching a fun fact...</p>';
 
                     try {
-                        const prompt = `Provide a single, interesting, and concise fun fact about Snowdon (Yr Wyddfa), covering its history, geology, or local legends.`;
+                        const prompt = `Provide a single, interesting, and concise fun fact about Snowdon (Yr Wyddfa) in Wales, covering its history, geology, or local legends.`;
                         
                         const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                         const payload = { contents: chatHistory };
